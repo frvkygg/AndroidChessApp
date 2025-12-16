@@ -5,14 +5,6 @@ import android.widget.GridLayout;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.app.AlertDialog;
-import android.view.View;
-
-import android.os.Bundle;
-import android.widget.GridLayout;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.app.AlertDialog;
-import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;

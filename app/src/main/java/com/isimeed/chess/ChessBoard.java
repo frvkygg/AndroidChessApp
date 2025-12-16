@@ -13,13 +13,13 @@ public class ChessBoard {
     }
 
     private void setupBoard() {
-        // Pawns
+
         for (int i = 0; i < 8; i++) {
             board[1][i] = new Piece(PieceType.PAWN, PieceColor.BLACK);
             board[6][i] = new Piece(PieceType.PAWN, PieceColor.WHITE);
         }
 
-        // Back rank
+
         PieceType[] order = {PieceType.ROOK, PieceType.KNIGHT, PieceType.BISHOP,
                 PieceType.QUEEN, PieceType.KING, PieceType.BISHOP,
                 PieceType.KNIGHT, PieceType.ROOK};
@@ -44,13 +44,13 @@ public class ChessBoard {
                 int dir = piece.color == PieceColor.WHITE ? -1 : 1;
                 int startRow = piece.color == PieceColor.WHITE ? 6 : 1;
 
-                // Forward moves
+
                 if (isInside(row + dir, col) && board[row + dir][col] == null)
                     moves.add(new int[]{row + dir, col});
                 if (row == startRow && board[row + dir][col] == null && board[row + 2*dir][col] == null)
                     moves.add(new int[]{row + 2*dir, col});
 
-                // Diagonal captures
+
                 for (int dc = -1; dc <= 1; dc += 2) {
                     int r = row + dir;
                     int c = col + dc;
@@ -100,7 +100,7 @@ public class ChessBoard {
                     moves.add(new int[]{r, c});
                 else {
                     if (board[r][c].color != piece.color)
-                        moves.add(new int[]{r, c}); // capture
+                        moves.add(new int[]{r, c});
                     break;
                 }
                 r += d[0];
@@ -164,14 +164,6 @@ public class ChessBoard {
             }
         }
         return false;
-    }
-
-    public void undoLastMove() {
-        if(moveHistory.isEmpty()) return;
-        Move last = moveHistory.remove(moveHistory.size()-1);
-        board[last.fromRow][last.fromCol] = board[last.toRow][last.toCol];
-        board[last.toRow][last.toCol] = last.capturedPiece;
-        currentTurn = currentTurn==PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
     }
 
     public boolean isCheckmate(PieceColor color) {
