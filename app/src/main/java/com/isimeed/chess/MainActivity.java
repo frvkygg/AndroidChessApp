@@ -51,25 +51,18 @@ public class MainActivity extends AppCompatActivity {
         boardGrid.post(this::drawBoard);
     }
 
-
     private void drawBoard() {
         boardGrid.removeAllViews();
 
         int screenWidth = getResources().getDisplayMetrics().widthPixels;
         int screenHeight = getResources().getDisplayMetrics().heightPixels;
-
-
         int boardSize = Math.min(screenWidth, screenHeight);
-
         int cellSize = boardSize / BOARD_SIZE;
-
 
         boardGrid.getLayoutParams().width = boardSize;
         boardGrid.getLayoutParams().height = boardSize;
-
         boardGrid.setRowCount(BOARD_SIZE);
         boardGrid.setColumnCount(BOARD_SIZE);
-
 
         for (int r = 0; r < BOARD_SIZE; r++) {
             for (int c = 0; c < BOARD_SIZE; c++) {
@@ -90,8 +83,6 @@ public class MainActivity extends AppCompatActivity {
         boardGrid.requestLayout();
     }
 
-
-
     private void handleCellClick(int row, int col, FrameLayout cell) {
         Piece piece = chessBoard.board[row][col];
 
@@ -100,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
                 selectedCell = cell;
                 selectedRow = row;
                 selectedCol = col;
-                cell.setBackgroundColor(0xFFFFD700); // gold for selected piece
+                cell.setBackgroundColor(0xFFFFD700);
 
                 List<int[]> legalMoves = chessBoard.getLegalMoves(row, col);
                 highlightedCells.clear();
@@ -118,11 +109,18 @@ public class MainActivity extends AppCompatActivity {
                 selectedCell.removeView(pieceView);
                 cell.addView(pieceView);
 
+
+                Piece movedPiece = chessBoard.board[row][col];
+                pieceView.setImageResource(getDrawableForPiece(movedPiece));
+
                 if (chessBoard.isCheckmate(chessBoard.currentTurn))
                     showCheckmateDialog(chessBoard.currentTurn == PieceColor.WHITE ? "Black wins" : "White wins");
+
+                if (chessBoard.isStalemate()) {
+                    showStealmateDialog("No Legal Move lead to Draw");
+                }
             }
 
-            // Restore original colors and remove dots
             selectedCell.setBackgroundColor(cellColors[selectedRow][selectedCol]);
             for (FrameLayout f : highlightedCells) {
                 int pos = boardGrid.indexOfChild(f);
@@ -139,9 +137,8 @@ public class MainActivity extends AppCompatActivity {
     private void addPieceToCell(FrameLayout cell, int row, int col) {
         Piece piece = chessBoard.board[row][col];
         if (piece == null) return;
-        int drawableId = getDrawableForPiece(piece);
         ImageView pieceView = new ImageView(this);
-        pieceView.setImageResource(drawableId);
+        pieceView.setImageResource(getDrawableForPiece(piece));
         pieceView.setAdjustViewBounds(true);
         pieceView.setScaleType(ImageView.ScaleType.FIT_CENTER);
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
@@ -151,18 +148,12 @@ public class MainActivity extends AppCompatActivity {
 
     private int getDrawableForPiece(Piece piece) {
         switch (piece.type) {
-            case KING:
-                return piece.color == PieceColor.WHITE ? R.drawable.wk : R.drawable.bk;
-            case QUEEN:
-                return piece.color == PieceColor.WHITE ? R.drawable.wq : R.drawable.bq;
-            case ROOK:
-                return piece.color == PieceColor.WHITE ? R.drawable.wr : R.drawable.br;
-            case BISHOP:
-                return piece.color == PieceColor.WHITE ? R.drawable.wb : R.drawable.bb;
-            case KNIGHT:
-                return piece.color == PieceColor.WHITE ? R.drawable.wn : R.drawable.bn;
-            case PAWN:
-                return piece.color == PieceColor.WHITE ? R.drawable.wp : R.drawable.bp;
+            case KING: return piece.color == PieceColor.WHITE ? R.drawable.wk : R.drawable.bk;
+            case QUEEN: return piece.color == PieceColor.WHITE ? R.drawable.wq : R.drawable.bq;
+            case ROOK: return piece.color == PieceColor.WHITE ? R.drawable.wr : R.drawable.br;
+            case BISHOP: return piece.color == PieceColor.WHITE ? R.drawable.wb : R.drawable.bb;
+            case KNIGHT: return piece.color == PieceColor.WHITE ? R.drawable.wn : R.drawable.bn;
+            case PAWN: return piece.color == PieceColor.WHITE ? R.drawable.wp : R.drawable.bp;
         }
         return 0;
     }
@@ -170,6 +161,15 @@ public class MainActivity extends AppCompatActivity {
     private void showCheckmateDialog(String message) {
         new AlertDialog.Builder(this)
                 .setTitle("Checkmate!")
+                .setMessage(message)
+                .setPositiveButton("Restart", (d, w) -> recreate())
+                .setCancelable(false)
+                .show();
+    }
+
+    private void showStealmateDialog(String message){
+        new AlertDialog.Builder(this)
+                .setTitle("Stalemate")
                 .setMessage(message)
                 .setPositiveButton("Restart", (d, w) -> recreate())
                 .setCancelable(false)
