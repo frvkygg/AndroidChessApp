@@ -7,7 +7,7 @@
     <GridLayout
         android:id="@+id/chessBoard"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:rowCount="8"
         android:columnCount="8"
         android:layout_gravity="center"/>
